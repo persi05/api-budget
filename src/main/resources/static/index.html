@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Budget API Panel</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="topbar">
+    <div>
+        <h1>Budget API Panel</h1>
+        <p>Manualne testowanie kont, transakcji, limitow i podsumowania.</p>
+    </div>
+    <button id="refreshButton" type="button">Odswiez</button>
+</header>
+
+<main class="layout">
+    <section class="panel metrics" aria-label="Podsumowanie">
+        <div>
+            <span>Laczne przychody</span>
+            <strong id="totalIncome">0.00</strong>
+        </div>
+        <div>
+            <span>Laczne wydatki</span>
+            <strong id="totalExpense">0.00</strong>
+        </div>
+        <div>
+            <span>Konta</span>
+            <strong id="accountCount">0</strong>
+        </div>
+    </section>
+
+    <section class="grid">
+        <div class="panel">
+            <div class="panel-head">
+                <h2>Konta</h2>
+            </div>
+            <form id="accountForm" class="inline-form">
+                <input id="accountName" name="name" maxlength="100" placeholder="Nazwa konta" required>
+                <button type="submit">Dodaj</button>
+            </form>
+            <div id="accountsList" class="list"></div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-head">
+                <h2>Limity kategorii</h2>
+            </div>
+            <form id="budgetForm" class="stack-form">
+                <input id="budgetCategory" name="category" maxlength="100" placeholder="Kategoria" required>
+                <input id="budgetLimit" name="monthlyLimit" type="number" min="0.01" max="9999999.99" step="0.01" placeholder="Limit miesieczny" required>
+                <button type="submit">Zapisz limit</button>
+            </form>
+            <div id="budgetsList" class="list compact"></div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <h2>Dodaj transakcje</h2>
+        </div>
+        <form id="transactionForm" class="transaction-form">
+            <select id="transactionAccount" name="accountId" required></select>
+            <select id="transactionType" name="type" required>
+                <option value="INCOME">INCOME</option>
+                <option value="EXPENSE">EXPENSE</option>
+            </select>
+            <input id="transactionAmount" name="amount" type="number" min="0.01" max="9999999.99" step="0.01" placeholder="Kwota" required>
+            <input id="transactionCategory" name="category" maxlength="100" placeholder="Kategoria" required>
+            <input id="transactionDate" name="transactionDate" type="date" required>
+            <input id="transactionDescription" name="description" maxlength="500" placeholder="Opis opcjonalny">
+            <button type="submit">Dodaj transakcje</button>
+        </form>
+        <div id="warningBox" class="warning hidden"></div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <h2>Transakcje</h2>
+        </div>
+        <form id="filterForm" class="filters">
+            <input id="filterFrom" name="from" type="date" aria-label="Od">
+            <input id="filterTo" name="to" type="date" aria-label="Do">
+            <input id="filterCategory" name="category" maxlength="100" placeholder="Kategoria">
+            <button type="submit">Filtruj</button>
+            <button id="clearFiltersButton" type="button">Wyczysc</button>
+        </form>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Konto</th>
+                    <th>Typ</th>
+                    <th>Kategoria</th>
+                    <th>Kwota</th>
+                    <th>Akcje</th>
+                </tr>
+                </thead>
+                <tbody id="transactionsTable"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <h2>Wydatki po kategorii</h2>
+        </div>
+        <div id="categorySummary" class="bars"></div>
+    </section>
+</main>
+
+<div id="toast" class="toast hidden" role="status"></div>
+<script src="/app.js"></script>
+</body>
+</html>
