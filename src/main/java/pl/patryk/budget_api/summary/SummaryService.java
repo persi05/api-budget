@@ -3,6 +3,7 @@ package pl.patryk.budget_api.summary;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.math.BigDecimal;
@@ -61,16 +62,17 @@ public class SummaryService {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<CategoryExpenseResponse> query = criteriaBuilder.createQuery(CategoryExpenseResponse.class);
         Root<TransactionEntity> transaction = query.from(TransactionEntity.class);
+        Expression<String> normalizedCategory = criteriaBuilder.lower(transaction.get("category"));
 
         query.select(criteriaBuilder.construct(
                 CategoryExpenseResponse.class,
-                transaction.get("category"),
+                normalizedCategory,
                 criteriaBuilder.sum(transaction.get("amount"))
         ));
         query.where(summaryPredicates(criteriaBuilder, transaction, TransactionType.EXPENSE, from, to)
                 .toArray(Predicate[]::new));
-        query.groupBy(transaction.get("category"));
-        query.orderBy(criteriaBuilder.asc(transaction.get("category")));
+        query.groupBy(normalizedCategory);
+        query.orderBy(criteriaBuilder.asc(normalizedCategory));
 
         return entityManager.createQuery(query).getResultList();
     }
