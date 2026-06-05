@@ -30,7 +30,11 @@ public class AccountService {
 
     @Transactional
     public AccountResponse createAccount(CreateAccountRequest request) {
-        Account account = new Account(request.name().trim());
+        String name = request.name().trim();
+        if (accountRepository.existsByNameIgnoreCase(name)) {
+            throw new ConflictException("Account with name '" + name + "' already exists.");
+        }
+        Account account = new Account(name);
         return AccountResponse.from(accountRepository.save(account));
     }
 

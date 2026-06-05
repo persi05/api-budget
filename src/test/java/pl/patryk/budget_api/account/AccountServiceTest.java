@@ -41,6 +41,19 @@ class AccountServiceTest {
     }
 
     @Test
+    void createAccountRejectsDuplicateNameIgnoringCaseAndSpaces() {
+        when(accountRepository.existsByNameIgnoreCase("Konto glowne")).thenReturn(true);
+
+        ConflictException exception = assertThrows(
+                ConflictException.class,
+                () -> accountService.createAccount(new CreateAccountRequest("  Konto glowne  "))
+        );
+
+        assertEquals("Account with name 'Konto glowne' already exists.", exception.getMessage());
+        verify(accountRepository, never()).save(any(Account.class));
+    }
+
+    @Test
     void getAccountThrowsNotFoundWhenAccountDoesNotExist() {
         when(accountRepository.findById(404L)).thenReturn(Optional.empty());
 
